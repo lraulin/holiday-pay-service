@@ -1,9 +1,6 @@
 import pandas as pd
-import csv
 from datetime import datetime, timedelta
-from io import BytesIO
-from glob import glob
-from os.path import getctime
+from io import BytesIO, StringIO
 
 HOLIDAY_MULTIPLIER = 0.5
 
@@ -58,9 +55,9 @@ def calc_holiday_pay(row) -> float:
     return round(row[PAY_RATE] * row[HOLIDAY_HOURS] * HOLIDAY_MULTIPLIER, 2)
 
 
-def process_csv(holiday: datetime, csv_data: bytes) -> str:
+def process_csv(holiday: datetime, csv_data: str) -> str:
     cols_to_keep = [CREATED_AT, NAME, START_TIME, END_TIME, LUNCH, HOURS_WORKED, REGULAR_HOURS_WORKED, OVERTIME_HOURS_WORKED, PAY_RATE, OVERTIME_PAY_RATE]
-    df = pd.read_csv(BytesIO(csv_data)).filter(cols_to_keep, axis=1)
+    df = pd.read_csv(StringIO(csv_data)).filter(cols_to_keep, axis=1)
 
     df[LUNCH] = df[LUNCH].fillna(0)
     df[HOLIDAY_HOURS] = df.apply(lambda row: calc_holiday_hours(holiday, row), axis=1)
