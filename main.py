@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
 from datetime import datetime
 import holiday_controller as hc
 
 app: Flask = Flask(__name__)
+CORS(app)
 
 @app.route('/holiday', methods=['POST'])
 def calculate_pay():
@@ -16,7 +18,7 @@ def calculate_pay():
     # Process data
     output = hc.process_csv(holiday, csv)
 
-    return _corsify_actual_response(jsonify(output))
+    return jsonify(output)
 
 
 def _build_cors_prelight_response():
@@ -29,6 +31,7 @@ def _build_cors_prelight_response():
 
 def _corsify_actual_response(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
     return response
 
 
