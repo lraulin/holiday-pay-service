@@ -47,10 +47,11 @@ def calc_holiday_hours(holiday: datetime, row) -> float:
         return min(row[REGULAR_HOURS_WORKED], holiday_hours)
     # shift starts before, ends on holiday - >
     elif start_time.date() < holiday.date() and end_time.date() == holiday.date():
-        overtime = row[OVERTIME_HOURS_WORKED]
-        holiday_hours = delta_to_hours(end_time - holiday)
-        holiday_hours = round(holiday_hours, 2)
-        return max(holiday_hours - overtime, 0)
+        overtime = row[OVERTIME_HOURS_WORKED] + row[DOUBLETIME_HOURS_WORKED]
+        hours_worked_on_holiday = round(delta_to_hours(end_time - holiday), 2)
+        adjustment_hours = max(hours_worked_on_holiday - overtime, 0)
+        adjustment_hours = min(row[REGULAR_HOURS_WORKED], adjustment_hours)
+        return adjustment_hours
     # shift not on holiday -> 0
     else:
         return 0
