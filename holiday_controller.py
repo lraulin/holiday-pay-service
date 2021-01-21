@@ -68,7 +68,7 @@ def calc_total_pay(row):
         DOUBLETIME_RATE] * row[DOUBLETIME_HOURS_WORKED] + row[STIPEND] + row[HOLIDAY_PAY], 2)
 
 
-def process_csv(holiday: datetime, csv_data: str, save=False) -> str:
+def process_csv(holiday: datetime, csv_data: str, save=False) -> dict:
     cols_to_keep = [CREATED_AT, NAME, START_TIME, END_TIME, LUNCH, HOURS_WORKED, REGULAR_HOURS_WORKED,
                     OVERTIME_HOURS_WORKED, PAY_RATE, OVERTIME_PAY_RATE, DOUBLETIME_HOURS_WORKED, DOUBLETIME_RATE,
                     STIPEND]

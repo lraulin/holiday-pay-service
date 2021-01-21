@@ -17,8 +17,9 @@ def calculate_pay():
 
     # Process data
     output = hc.process_csv(holiday, csv)
-
-    return jsonify(output)
+    response = jsonify(output)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 if __name__ == '__main__':
