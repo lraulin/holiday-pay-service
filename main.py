@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify, make_response
-from flask_cors import CORS
+from flask_cors import cross_origin
 from datetime import datetime
 import holiday_controller as hc
 
 app: Flask = Flask(__name__)
-CORS(app)
 
 
 @app.route('/holiday', methods=['POST'])
+@cross_origin()
 def calculate_pay():
     body = request.json
     # Get date from query parameter
