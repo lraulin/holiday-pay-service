@@ -1,4 +1,5 @@
 import pandas as pd
+from dateparser import parse
 from datetime import datetime, timedelta
 from io import BytesIO, StringIO
 
@@ -34,8 +35,9 @@ def delta_to_hours(delta: timedelta):
 
 def calc_holiday_hours(holiday: datetime, row) -> float:
     holiday_end = holiday + timedelta(days=1)
-    start_time = datetime.strptime(row['Start Time'], '%Y-%m-%d %I:%M %p')
-    end_time = datetime.strptime(row['End Time'], '%Y-%m-%d %I:%M %p')
+    start_time = parse(row['Start Time'])
+    end_time = parse(row['End Time'])
+
 
     # shift starts and ends on holiday -> Regular Hours
     if start_time.date() == holiday.date() and end_time.date() == holiday.date():
@@ -66,7 +68,7 @@ def calc_total_pay(row):
         DOUBLETIME_RATE] * row[DOUBLETIME_HOURS_WORKED] + row[STIPEND] + row[HOLIDAY_PAY], 2)
 
 
-def process_csv(holiday: datetime, csv_data: str) -> str:
+def process_csv(holiday: datetime, csv_data: str, save=False) -> str:
     cols_to_keep = [CREATED_AT, NAME, START_TIME, END_TIME, LUNCH, HOURS_WORKED, REGULAR_HOURS_WORKED,
                     OVERTIME_HOURS_WORKED, PAY_RATE, OVERTIME_PAY_RATE, DOUBLETIME_HOURS_WORKED, DOUBLETIME_RATE,
                     STIPEND]
@@ -93,4 +95,17 @@ def process_csv(holiday: datetime, csv_data: str) -> str:
     needs_super_admin = df[TOTAL_PAY] >= 2000
     names_needing_approval = list(set(df[needs_super_admin][NAME]))
 
+    # for debugging
+    if save:
+        df.to_csv('output.csv')
+
     return {'csv': df.to_csv(), 'super_admin_list': names_needing_approval}
+
+# if __name__ == '__main__':
+#     date = datetime(year=2021, month=1, day=1)
+#     file = '/Users/leeraulin/Dropbox/My Mac (Lees-MBP.ad.dot.gov)/Downloads/Timecards-Export-2021-01-21-12-37-15.txt'
+#     # file = '/Users/leeraulin/Dropbox/My Mac (Lees-MBP.ad.dot.gov)/Downloads/Timecards-Export-2021-01-18-12-17-33.txt'
+#     with open(file, 'r') as file:
+#         data = file.read()
+#         process_csv(date, data, True)
+#
